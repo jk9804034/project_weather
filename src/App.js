@@ -1,43 +1,99 @@
-// System Import
-import React, { Fragment } from 'react';
-import { Route, Switch } from "react-router-dom";
-import { createGlobalStyle } from "styled-components";
-// Container Import
-import HeaderContainer from "./container/layout/HeaderContainer";
-import LnbContainer from "./container/layout/LnbContainer";
-// Component Import
-import Main from "./page/main/Main";
-import AddList from "./page/addList/AddList";
-import View from "./page/view/View";
-import Login from "./page/member/Login";
+import React, { useState } from "react";
+import { Container } from "react-bootstrap";
+import styled from "styled-components";
+import { Route, Switch, Redirect } from "react-router-dom";
 
-const GlobalStyle = createGlobalStyle`
-  * {
-    margin:0;
-    padding:0;
-  }
+import MainPage from "./components/MainPage/MainPage";
+import NavBar from "./components/NavBar/NavBar";
+import SidePanel from "./components/SidePanel/SidePanel";
+import Login from "./components/NavBar/LoginSignUp/Login";
+import SignUp from "./components/NavBar/LoginSignUp/SignUp";
+import HotVideo from "./components/SidePanel/HotVideo/HotVideo";
+import Subscribe from "./components/SidePanel/Subscribe/Subscribe";
+
+const GlobalContainer = styled.div`
+  /* @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"); */
+
+  /* $text-color: #b1bdb4; */
+  /* $black-primary: #16181b; */
+  /* $blackSecondary: #121417; */
+  /* $bordeColor: #4c4c4c; */
+
+  /* $breakpointMedium: 1224px;
+  $breakpointSmall: 520px; */
+
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  background: #16181b;
+  background-attachment: fixed;
+
+  color: #b1bdb4;
+  /* font-family: "Roboto", sans-serif; */
+  /* letter-spacing: 0.1px; */
 `;
+
+const MainFrame = ({ children }) => {
+  const [toggleSidePanel, setToggleSidePanel] = useState(false);
+
+  const handleToggleSidePanel = () => {
+    setToggleSidePanel((value) => !value);
+  };
+
+  return (
+    <>
+      <NavBar handleToggleSidePanel={handleToggleSidePanel} />
+      <div style={{ height: "95vh", display: "flex" }}>
+        <SidePanel
+          toggleSidePanel={toggleSidePanel}
+          handleToggleSidePanel={handleToggleSidePanel}
+        />
+        <Container fluid style={{ border: "3px solid blue" }}>
+          {children}
+        </Container>
+      </div>
+    </>
+  );
+};
 
 function App() {
   return (
-    <Fragment>
-      <GlobalStyle />
-
-      {/* Header Container */}
-      <HeaderContainer />
-      {/* //Header Container */}
-
-      {/* Lnb Container */}
-      <LnbContainer />
-      {/* //Lnb Container */}
-
+    <GlobalContainer>
       <Switch>
-        <Route exact path="/" component={Main} />
-        <Route path="/add" component={AddList} />
-        <Route path="/view/:name" component={View} />
+        <Route path="/" exact>
+          <MainFrame>
+            <MainPage />
+          </MainFrame>
+        </Route>
+
+        <Route path="/home">
+          <MainFrame>
+            <MainPage />
+          </MainFrame>
+        </Route>
+
+        <Route path="/hotvideo">
+          <MainFrame>
+            <HotVideo />
+          </MainFrame>
+        </Route>
+
+        <Route path="/subscribe">
+          <MainFrame>
+            <Subscribe />
+          </MainFrame>
+        </Route>
+
         <Route path="/login" component={Login} />
+        <Route path="/signup" component={SignUp} />
+
+        {/* 없는 페이지로 이동시 메인으로 이동 */}
+        <Route>
+          <Redirect to="/" />
+        </Route>
       </Switch>
-    </Fragment>
+    </GlobalContainer>
   );
 }
 
